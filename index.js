@@ -86,7 +86,6 @@ app.post("/save", upload.single("file"), (req, res) => {
 
     fs.appendFile(filePath, textContent + "\n", (err) => {
       if (err) {
-        console.error("Error writing to file:", err);
         return res.status(500).send("Failed to save");
       }
       //   res.send("Data saved");
@@ -98,7 +97,6 @@ app.post("/save", upload.single("file"), (req, res) => {
       fileUrl,
     });
   } catch (e) {
-    console.log(e);
     return res.status(500).json({
       message: "Internal Server Error",
       status: false,
@@ -111,7 +109,6 @@ app.get("/clear", (req, res) => {
     const filePath = path.join(__dirname, "data.txt");
     fs.writeFile(filePath, "", (err) => {
       if (err) {
-        console.error("Error writing to file:", err);
         return res.status(500).send("Failed to clear");
       }
     });
@@ -120,7 +117,6 @@ app.get("/clear", (req, res) => {
       status: true,
     });
   } catch (e) {
-    console.log(e);
     return res.status(500).json({
       message: "Internal Server Error",
       status: false,
@@ -139,7 +135,7 @@ app.post("/send-email", (req, res) => {
     source = "website",
     designation,
     experience,
-    resume
+    resume,
   } = req.body;
 
   const transporter = nodemailer.createTransport({
@@ -154,14 +150,14 @@ app.post("/send-email", (req, res) => {
   if (source === "careers") {
     mailOptions = {
       from: "ads@proactivedigital.in",
-      to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in, arihantj916@gmail.com",
+      to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in",
       subject: "Celitix Carrers Enquiry",
-      html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Company: ${company}<br>Service: ${service}<br>Message: ${message}<br>Designation: ${designation}<br>Experience: ${experience}<br>Resume: ${resume}`,
+      html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Message: ${message}<br>Designation: ${designation}<br>Experience: ${experience}<br>Resume: ${resume}`,
     };
   } else {
     mailOptions = {
       from: "ads@proactivedigital.in",
-      to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in, arihantj916@gmail.com",
+      to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in",
       subject: "Celitix Contact Enquiry",
       html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Company: ${company}<br>Service: ${service}<br>Message: ${message}`,
     };
@@ -169,9 +165,15 @@ app.post("/send-email", (req, res) => {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        status: false,
+      });
     } else {
-      console.log("Email sent: " + info.response);
+      return res.status(200).json({
+        message: "Email sent successfully",
+        status: true,
+      });
     }
   });
   return res.status(200).json({
