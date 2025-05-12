@@ -7,11 +7,14 @@ import { fileURLToPath } from "url";
 import axios from "axios";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import cors from "cors"
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(morgan("dev"));
+
+app.use(cors())
 
 app.use("/data", express.static(path.join(__dirname, "data.txt")));
 
