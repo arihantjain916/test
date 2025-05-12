@@ -11,9 +11,16 @@ import multer from "multer";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const app = express();
+
+const filesDir = path.join(__dirname, "files");
+if (!fs.existsSync(filesDir)) {
+  fs.mkdirSync(filesDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "files/");
+    cb(null, filesDir);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -21,18 +28,14 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
-
 const upload = multer({ storage });
 
-const app = express();
-
+// Middleware
 app.use(bodyParser.json());
 app.use(morgan("dev"));
-
 app.use(cors());
-
+app.use("/files", express.static(filesDir));
 app.use("/data", express.static(path.join(__dirname, "data.txt")));
-app.use("/files", express.static("files"));
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
