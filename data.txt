@@ -14,3 +14,4 @@ Arihant Jain,arihant@test.com,9672670732,N/A,N/A,fsfsfsdf,2025-05-12T11:48:27.54
 Arihant Jain,arihant@test.com,9672670732,N/A,N/A,eff,2025-05-12T11:49:21.701Z,careers,6,PHP Developer,http://localhost:3000/files/1747050561697-945507721.pdf,
 Arihant Jain,arihant@gmail.com,9672670732,N/A,N/A,sdfsdfsdfsdf,2025-05-12T11:52:35.372Z,careers,8,PHP Developer,http://localhost:3000/files/1747050755366-684918549.pdf,
 Arihant Jain,arihant@test.com,9672670732,N/A,N/A,hii i am arihant,2025-05-12T11:53:53.618Z,careers,6,PHP Developer,http://localhost:3000/files/1747050833615-854177861.pdf,
+Arihant Jain,arihantj916@gmail.com,919672670732,Arihant Infotech,WhatsApp Business API,arihantt,2025-05-14T06:16:48.933Z,Website,N/A,N/A,,

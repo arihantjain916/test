@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import cors from "cors";
 import multer from "multer";
 import nodemailer from "nodemailer";
+import axios from "axios";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -125,61 +126,136 @@ app.get("/clear", (req, res) => {
 });
 
 app.post("/send-email", (req, res) => {
-  const {
-    name,
-    email,
-    phone,
-    company,
-    service,
-    message,
-    source = "website",
-    designation,
-    experience,
-    resume,
-  } = req.body;
+  try {
+    const {
+      name,
+      email,
+      phone,
+      company,
+      service,
+      message,
+      source = "website",
+      designation,
+      experience,
+      resume,
+    } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "info@proactivedigital.in",
-      pass: "womb nmot zyfb yqfp",
-    },
-  });
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "info@proactivedigital.in",
+        pass: "womb nmot zyfb yqfp",
+      },
+    });
 
-  var mailOptions = {};
-  if (source === "careers") {
-    mailOptions = {
-      from: "ads@proactivedigital.in",
-      to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in",
-      subject: "Celitix Carrers Enquiry",
-      html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Message: ${message}<br>Designation: ${designation}<br>Experience: ${experience}<br>Resume: ${resume}`,
-    };
-  } else {
-    mailOptions = {
-      from: "ads@proactivedigital.in",
-      to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in",
-      subject: "Celitix Contact Enquiry",
-      html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Company: ${company}<br>Service: ${service}<br>Message: ${message}`,
-    };
+    var mailOptions = {};
+    if (source === "careers") {
+      mailOptions = {
+        from: "ads@proactivedigital.in",
+        to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in",
+        subject: "Celitix Carrers Enquiry",
+        html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Message: ${message}<br>Designation: ${designation}<br>Experience: ${experience}<br>Resume: ${resume}`,
+      };
+    } else {
+      mailOptions = {
+        from: "ads@proactivedigital.in",
+        to: "info@proactivedigital.in, sales@proactivesms.in, yogendra@proactivesms.in",
+        subject: "Celitix Contact Enquiry",
+        html: `Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Company: ${company}<br>Service: ${service}<br>Message: ${message}`,
+      };
+    }
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        return res.status(500).json({
+          message: "Internal Server Error",
+          status: false,
+        });
+      } else {
+        return res.status(200).json({
+          message: "Email sent successfully",
+          status: true,
+        });
+      }
+    });
+    return res.status(200).json({
+      message: "Email sent successfully",
+      status: true,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      status: false,
+      error: e.message,
+    });
   }
+});
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      return res.status(500).json({
-        message: "Internal Server Error",
-        status: false,
+app.post("/send-whatsapp", async (req, res) => {
+  try {
+    const { phone, name, service } = req.body;
+
+    // headers
+    const payload = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: phone,
+      type: "template",
+      template: {
+        name: "enquiry_response",
+        language: {
+          code: "en",
+        },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              {
+                type: "text", //name
+                text: name,
+              },
+              {
+                type: "text", //service
+                text: service,
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const config = {
+      headers: {
+        key: "308c98f3d8XX",
+        wabaNumber: "917230000091",
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.post(
+      "https://api.celitix.com/wrapper/waba/message",
+      payload,
+      config
+    );
+
+    if (response?.data?.messages[0]?.message_status === "accepted") {
+      return res.status(200).json({
+        status: true,
       });
     } else {
       return res.status(200).json({
-        message: "Email sent successfully",
-        status: true,
+        status: false,
+        message: response.data,
       });
     }
-  });
-  return res.status(200).json({
-    message: "Email sent successfully",
-    status: true,
-  });
+    // if(response?.message?.messages[0])
+  } catch (e) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      status: false,
+      error: e.message,
+    });
+  }
 });
 
 const port = 3000;
