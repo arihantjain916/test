@@ -199,7 +199,7 @@ app.post("/send-whatsapp", async (req, res) => {
     const payload = {
       messaging_product: "whatsapp",
       recipient_type: "individual",
-      to: phone,
+      to: `91${phone}`,
       type: "template",
       template: {
         name: "enquiry_response",
